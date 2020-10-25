@@ -1,1 +1,3 @@
 android example app using viewBinding, Coroutine, Flow, Paging Library 3 (alpha 07)
+
+learning from : https://github.com/googlecodelabs/android-paging/tree/step5-9_paging_3.0
