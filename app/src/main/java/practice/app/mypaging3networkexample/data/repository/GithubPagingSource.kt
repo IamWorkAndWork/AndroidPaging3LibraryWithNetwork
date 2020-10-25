@@ -1,5 +1,6 @@
 package practice.app.mypaging3networkexample.data.repository
 
+import android.util.Log
 import androidx.paging.PagingSource
 import practice.app.mypaging3networkexample.data.api.GithubService
 import practice.app.mypaging3networkexample.data.model.Repo
@@ -16,6 +17,10 @@ class GithubPagingSource(
         private const val IN_QUALIFIER = "in:name,description"
     }
 
+    private val TAG by lazy {
+        javaClass.simpleName
+    }
+
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Repo> {
 
         val position = params.key ?: GITHUB_STARTING_PAGE_INDEX
@@ -29,6 +34,11 @@ class GithubPagingSource(
 
             val prevKey = if (position == GITHUB_STARTING_PAGE_INDEX) null else position - 1
             val nextKey = if (repos.isEmpty()) null else position + 1
+
+            Log.d(
+                TAG,
+                "query = $query ; prevKey : $prevKey ; position : $position ; nextKey : $nextKey ; size : ${params.loadSize}"
+            )
 
             LoadResult.Page(
                 data = repos,
