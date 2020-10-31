@@ -15,7 +15,7 @@ interface GithubRepository {
 class GithubRepositoryImpl(private val githubService: GithubService) : GithubRepository {
 
     companion object {
-        private const val NETWORK_PAGE_SIZE = 10
+        private const val NETWORK_PAGE_SIZE = 5
     }
 
     override fun execute(query: String): Flow<PagingData<Repo>> {

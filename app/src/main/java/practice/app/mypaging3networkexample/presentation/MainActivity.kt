@@ -4,8 +4,10 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import practice.app.mypaging3networkexample.Injection
 import practice.app.mypaging3networkexample.data.model.Repo
 import practice.app.mypaging3networkexample.databinding.ActivityMainBinding
@@ -46,11 +49,23 @@ class MainActivity : AppCompatActivity(), MainAdapter.MainAdapterListener {
         setupViewBinding()
 
         initWidget()
+        initListener()
 
         val query = savedInstanceState?.getString(LAST_SEARCH_QUERY) ?: DEFAULT_QUERY
         search(query)
         initSearch(query)
 
+    }
+
+    private fun initListener() {
+        mainAdapter.addLoadStateListener { loadState ->
+
+            binding.mainListRecyclerView.isVisible =
+                loadState.source.refresh is LoadState.NotLoading
+
+            binding.mainProgressBar.isVisible = loadState.source.refresh is LoadState.Loading
+
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -75,7 +90,10 @@ class MainActivity : AppCompatActivity(), MainAdapter.MainAdapterListener {
 
         binding.mainListRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = mainAdapter
+            adapter = mainAdapter.withLoadStateHeaderAndFooter(
+                header = MainLoadStateAdapter(),
+                footer = MainLoadStateAdapter()
+            )
             addItemDecoration(decoration)
         }
 
